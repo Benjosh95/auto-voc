@@ -8,3 +8,5 @@ Thumbs.db
 
 # Ignore specific files
 curling.http
+notes.md
+pgadmin.sh
