@@ -13,9 +13,10 @@ func NewRouter(vocService *services.VocService) *gin.Engine {
 
 	// set up middlewares (CORS, ...)
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "PATCH"},
-		AllowHeaders:     []string{"Origin"},
+		// AllowOrigins:     []string{"http://localhost:5173"},
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE", "PATCH", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
@@ -27,6 +28,7 @@ func NewRouter(vocService *services.VocService) *gin.Engine {
 	// Define routes and map them to handlers
 	router.GET("/vocs", vocHandler.GetVocs)
 	router.POST("/vocs", vocHandler.CreateVoc)
+	router.PUT("/vocs/:id", vocHandler.UpdateVoc)
 	router.DELETE("vocs/:id", vocHandler.DeleteVoc)
 
 	return router

@@ -20,8 +20,6 @@ func NewVocHandler(vocService *services.VocService) *VocHandler {
 }
 
 func (h *VocHandler) GetVocs(c *gin.Context) {
-	// TODO: request processing?
-
 	vocs, err := h.vocService.GetVocs()
 	if err != nil {
 		fmt.Printf("Failed to get vocs: %v, err: %v\n", vocs, err)
@@ -36,7 +34,6 @@ func (h *VocHandler) GetVocs(c *gin.Context) {
 }
 
 func (h *VocHandler) CreateVoc(c *gin.Context) {
-	// TODO request processing
 	var req models.CreateVocRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -58,6 +55,30 @@ func (h *VocHandler) CreateVoc(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Message": fmt.Sprintf("successfully created voc with id: %v", id),
 	})
+}
+
+func (h *VocHandler) UpdateVoc(c *gin.Context) {
+	id := c.Param("id")
+
+	var req models.UpdateVocRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		fmt.Printf("Failed to parse body: %v\n", err)
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid input"})
+		return
+	}
+
+	updatedVoc, err := h.vocService.UpdateVoc(id, req)
+	if err != nil {
+		fmt.Printf("Failed to update voc: %v\n", err)
+		c.JSON(500, gin.H{
+			"Message": "Error updating a voc",
+		})
+		return
+	}
+
+	fmt.Printf("Succesfully updated voc with id: %v and content: %v", id, req)
+	c.JSON(200, updatedVoc)
 }
 
 func (h *VocHandler) DeleteVoc(c *gin.Context) {

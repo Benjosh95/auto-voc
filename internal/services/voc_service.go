@@ -30,7 +30,7 @@ func (s *VocService) GetVocs() ([]models.Voc, error) {
 	var vocs []models.Voc
 	for rows.Next() {
 		var voc models.Voc
-		if err := rows.Scan(&voc.ID, &voc.English, &voc.German); err != nil {
+		if err := rows.Scan(&voc.ID, &voc.English, &voc.German, &voc.Status, &voc.ReviewCount, &voc.NextReviewDate); err != nil {
 			log.Printf("Failed to scan row: %v", err)
 			return nil, err
 		}
@@ -53,6 +53,35 @@ func (s *VocService) CreateVoc(voc models.CreateVocRequest) (string, error) {
 	}
 
 	return id, nil
+}
+
+// TODO: better respond the updated voc
+func (s *VocService) UpdateVoc(id string, voc models.UpdateVocRequest) (*models.Voc, error) {
+	query := `
+		UPDATE vocabularies
+		SET english = $1,
+		    german = $2,
+		    status = $3,
+		    reviewCount = $4,
+		    nextReviewDate = $5
+		WHERE id = $6
+		RETURNING id, english, german, status, reviewCount, nextReviewDate;
+	`
+
+	var updatedVoc models.Voc
+	err := s.db.QueryRowContext(context.TODO(), query, voc.English, voc.German, voc.Status, voc.ReviewCount, voc.NextReviewDate, id).Scan(
+		&updatedVoc.ID,
+		&updatedVoc.English,
+		&updatedVoc.German,
+		&updatedVoc.Status,
+		&updatedVoc.ReviewCount,
+		&updatedVoc.NextReviewDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &updatedVoc, nil
 }
 
 func (s *VocService) DeleteVoc(id string) error {
