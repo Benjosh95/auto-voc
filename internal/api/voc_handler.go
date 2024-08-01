@@ -32,9 +32,7 @@ func (h *VocHandler) GetVocs(c *gin.Context) {
 	}
 
 	fmt.Printf("Succesfully recieved vocs: %v", vocs)
-	c.JSON(200, gin.H{
-		"vocs": vocs,
-	})
+	c.JSON(200, vocs)
 }
 
 func (h *VocHandler) CreateVoc(c *gin.Context) {
