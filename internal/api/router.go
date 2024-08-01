@@ -27,6 +27,7 @@ func NewRouter(vocService *services.VocService) *gin.Engine {
 	// Define routes and map them to handlers
 	router.GET("/vocs", vocHandler.GetVocs)
 	router.POST("/vocs", vocHandler.CreateVoc)
+	router.DELETE("vocs/:id", vocHandler.DeleteVoc)
 
 	return router
 }

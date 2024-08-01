@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
 	"github.com/Benjosh95/auto-voc/internal/models"
@@ -19,9 +18,8 @@ func NewVocService(db *sql.DB) *VocService {
 
 // TODO: Add Ctx?
 func (s *VocService) GetVocs() ([]models.Voc, error) {
-	fmt.Printf("Trying to get all Vocabularies...")
-
 	query := `SELECT * FROM vocabularies`
+
 	rows, err := s.db.QueryContext(context.TODO(), query)
 	if err != nil {
 		log.Printf("Failed to get Vocabularies: %v", err)
@@ -44,9 +42,8 @@ func (s *VocService) GetVocs() ([]models.Voc, error) {
 
 // TODO: Add Ctx?
 func (s *VocService) CreateVoc(voc models.CreateVocRequest) (string, error) {
-	fmt.Printf("Trying to create a vocabulary...")
-
 	query := `INSERT INTO vocabularies (english, german) VALUES ($1, $2) RETURNING id`
+
 	var id string
 	// TODO: Add Ctx
 	err := s.db.QueryRowContext(context.TODO(), query, voc.English, voc.German).Scan(&id)
@@ -56,4 +53,16 @@ func (s *VocService) CreateVoc(voc models.CreateVocRequest) (string, error) {
 	}
 
 	return id, nil
+}
+
+func (s *VocService) DeleteVoc(id string) error {
+	query := `DELETE FROM vocabularies WHERE id = $1`
+
+	_, err := s.db.ExecContext(context.TODO(), query, id)
+	if err != nil {
+		log.Printf("Failed to delete vocabulary with id: %v", id)
+		return err
+	}
+
+	return nil
 }

@@ -59,3 +59,18 @@ func (h *VocHandler) CreateVoc(c *gin.Context) {
 		"Message": fmt.Sprintf("successfully created voc with id: %v", id),
 	})
 }
+
+func (h *VocHandler) DeleteVoc(c *gin.Context) {
+	id := c.Param("id")
+
+	err := h.vocService.DeleteVoc(id)
+	if err != nil {
+		fmt.Printf("Failed to delete a vocabulary with id: %v", id)
+		c.JSON(500, gin.H{
+			"Message": fmt.Sprintf("Failed to delete vocabulary with id: %v", id),
+		})
+		return
+	}
+
+	c.JSON(204, nil)
+}
