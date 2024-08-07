@@ -8,6 +8,7 @@ import (
 	"github.com/Benjosh95/auto-voc/internal/db"
 	"github.com/Benjosh95/auto-voc/internal/server"
 	"github.com/Benjosh95/auto-voc/internal/services"
+	"github.com/go-playground/validator/v10"
 )
 
 func main() {
@@ -25,8 +26,11 @@ func main() {
 	// Init services (with dependencies from above like messagebrokers)
 	vocService := services.NewVocService(dbConn)
 
+	// Init validator
+	validate := validator.New()
+
 	// Init API router (add all services)
-	router := api.NewRouter(vocService)
+	router := api.NewRouter(vocService, validate)
 
 	// Init and run Server
 	server := server.NewServer(cfg.ServerConfig, router)
