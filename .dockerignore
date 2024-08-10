@@ -1,0 +1,39 @@
+# Ignore the .git directory and other VCS files
+.git
+.gitignore
+
+# Ignore Dockerfile and Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore documentation files
+README.md
+LICENSE
+notes.md
+pgadmin.sh
+curling.http
+dockerRun.sh
+
+# Ignore any other files or directories you don't need in the image
+*.log
+*.tmp
+.env
+
+# Ignore macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# macOS directory attributes
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk

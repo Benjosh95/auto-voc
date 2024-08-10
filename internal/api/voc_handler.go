@@ -105,7 +105,9 @@ func (h *VocHandler) DeleteVoc(c *gin.Context) {
 
 	err := h.vocService.DeleteVoc(id)
 	if err != nil {
-		fmt.Printf("Failed to delete a vocabulary with id: %v", id)
+		// TODO: Error handling is wack
+		fmt.Printf("Failed to delete a vocabulary with id: %v\n", id)
+		fmt.Printf("%v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"Message": fmt.Sprintf("Failed to delete vocabulary with id: %v", id),
 		})

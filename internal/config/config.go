@@ -1,6 +1,11 @@
 package config
 
-import "os"
+import (
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	ServerConfig
@@ -15,12 +20,17 @@ type DBConfig struct {
 
 // TODO: maybe use library for env-variables
 func LoadConfig() Config {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found")
+	}
+
 	return Config{
 		ServerConfig: ServerConfig{
-			Address: getEnv("SERVER_ADDRESS", "127.0.0.1:8080"),
+			Address: getEnv("SERVER_ADDRESS", "localhost:8080"),
 		},
 		DBConfig: DBConfig{
-			ConnectionString: getEnv("DB_CONNECTION_STRING", "postgres://vocmaster:vocmasterpassword@voc-db.cbeug4q2kw1j.eu-central-1.rds.amazonaws.com:5432/voc-db?sslmode=require"),
+			ConnectionString: getEnv("DATABASE_URL", ""),
 		},
 	}
 }

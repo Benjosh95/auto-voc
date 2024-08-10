@@ -25,12 +25,15 @@ func NewRouter(vocService *services.VocService, validate *validator.Validate) *g
 
 	// Init handler(s) with service(s), and more
 	vocHandler := NewVocHandler(vocService, validate)
+	appHandler := NewAppHandler()
 
 	// Define routes and map them to handlers
 	router.GET("/vocs", vocHandler.GetVocs) // filtering possible
 	router.POST("/vocs", vocHandler.CreateVoc)
 	router.PUT("/vocs/:id", vocHandler.UpdateVoc)
 	router.DELETE("vocs/:id", vocHandler.DeleteVoc)
+
+	router.GET("/health", appHandler.Health)
 
 	return router
 }

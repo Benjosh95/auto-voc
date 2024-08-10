@@ -23,7 +23,7 @@ func (s *VocService) GetVocs(filter models.VocFilter) ([]models.Voc, error) {
 	query := sq.Select("*").From("vocabularies")
 
 	if filter.NextReviewDate != "" {
-		query = query.Where("DATE(nextReviewDate) = ?", filter.NextReviewDate)
+		query = query.Where("DATE(nextReviewDate) <= ?", filter.NextReviewDate)
 	}
 	if filter.Status != 0 {
 		query = query.Where(sq.Eq{"status": filter.Status})
@@ -69,12 +69,13 @@ func (s *VocService) CreateVoc(voc models.CreateVocRequest) (string, error) {
 		Values(voc.English, voc.German).
 		Suffix("RETURNING id")
 
-	sql, args, err := query.ToSql()
+	sql, args, err := query.PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return "", err
 	}
 
 	var id string
+	log.Printf("SQL: %s, Args: %v", sql, args)
 	err = s.db.QueryRowContext(context.TODO(), sql, args...).Scan(&id)
 	if err != nil {
 		log.Printf("Failed to create vocabulary: %v", err)
@@ -95,11 +96,12 @@ func (s *VocService) UpdateVoc(id string, voc models.UpdateVocRequest) (*models.
 		Where(sq.Eq{"id": id}).
 		Suffix("RETURNING id, english, german, status, reviewCount, nextReviewDate")
 
-	sql, args, err := query.ToSql()
+	sql, args, err := query.PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return nil, err
 	}
 
+	log.Printf("SQL: %s, Args: %v", sql, args)
 	var updatedVoc models.Voc
 	err = s.db.QueryRowContext(context.TODO(), sql, args...).Scan(
 		&updatedVoc.ID,
@@ -120,11 +122,12 @@ func (s *VocService) UpdateVoc(id string, voc models.UpdateVocRequest) (*models.
 func (s *VocService) DeleteVoc(id string) error {
 	query := sq.Delete("vocabularies").Where(sq.Eq{"id": id})
 
-	sql, args, err := query.ToSql()
+	sql, args, err := query.PlaceholderFormat(sq.Dollar).ToSql()
 	if err != nil {
 		return err
 	}
 
+	log.Printf("SQL: %s, Args: %v", sql, args)
 	_, err = s.db.ExecContext(context.TODO(), sql, args...)
 	if err != nil {
 		log.Printf("Failed to delete vocabulary with id: %v", id)
